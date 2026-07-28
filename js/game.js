@@ -1,14 +1,16 @@
 // Leaderboard Manager
 class LeaderboardManager {
   constructor() {
-    this.storageKey = 'cybersnake_global_ranking_v2';
-    this.defaultRankings = [
-      { name: 'Lucas Martins', score: 2500, date: '28/07/2026' },
-      { name: 'CyberSnake 99', score: 1850, date: '27/07/2026' },
-      { name: 'Neo', score: 1420, date: '26/07/2026' },
-      { name: 'Trinity', score: 1100, date: '25/07/2026' },
-      { name: 'Morpheus', score: 850, date: '24/07/2026' }
-    ];
+    this.storageKey = 'cybersnake_global_ranking_v3';
+    this.defaultRankings = [];
+  }
+
+  clearRankings() {
+    try {
+      localStorage.removeItem(this.storageKey);
+      localStorage.removeItem('cybersnake_highscore');
+    } catch(e) {}
+    this.saveRankings([]);
   }
 
   getRankings() {
@@ -116,6 +118,7 @@ class SnakeGame {
     this.btnShowRanking = document.getElementById('btn-show-ranking');
     this.btnCloseRanking = document.getElementById('btn-close-ranking');
     this.btnCloseRankingBottom = document.getElementById('btn-close-ranking-bottom');
+    this.btnClearRanking = document.getElementById('btn-clear-ranking');
     this.btnToggleSound = document.getElementById('btn-toggle-sound');
     this.btnToggleMode = document.getElementById('btn-toggle-mode');
 
@@ -189,6 +192,12 @@ class SnakeGame {
     handleBtn(this.btnShowRanking, () => this.openRankingModal());
     handleBtn(this.btnCloseRanking, () => this.closeRankingModal());
     handleBtn(this.btnCloseRankingBottom, () => this.closeRankingModal());
+    handleBtn(this.btnClearRanking, () => {
+      this.leaderboard.clearRankings();
+      this.highScore = 0;
+      this.highScoreValEl.textContent = this.formatScore(0);
+      this.leaderboard.render(this.leaderboardListEl);
+    });
 
     this.playerNameInput.addEventListener('change', (e) => {
       localStorage.setItem('cybersnake_player_name', e.target.value);

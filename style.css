@@ -670,6 +670,24 @@ input[type="range"] {
   position: relative;
 }
 
+.leaderboard-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.btn-danger-subtle {
+  background: rgba(255, 0, 80, 0.2) !important;
+  border-color: rgba(255, 0, 80, 0.5) !important;
+  color: #ff4d6d !important;
+  font-size: 0.85rem !important;
+}
+
+.btn-danger-subtle:hover {
+  background: rgba(255, 0, 80, 0.4) !important;
+  box-shadow: 0 0 15px rgba(255, 0, 80, 0.5) !important;
+}
+
 .leaderboard-header {
   display: flex;
   justify-content: space-between;
