@@ -22,7 +22,15 @@ export default async function handler(req, res) {
     try {
       const response = await fetch(BIN_URL);
       if (response.ok) {
-        const data = await response.json();
+        let data = await response.json();
+        
+        // Se a API retornar formato empacotado: {"status": 0, "data": "{\\"rankings\\":...}"}
+        if (data && data.status === 0 && typeof data.data === 'string') {
+          try {
+            data = JSON.parse(data.data);
+          } catch(e) {}
+        }
+        
         if (data && Array.isArray(data.rankings)) return data.rankings;
       }
     } catch (e) {}
