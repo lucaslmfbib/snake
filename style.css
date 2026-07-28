@@ -734,16 +734,29 @@ input[type="range"] {
 /* ==========================================
    MOBILE RESPONSIVE STYLES (Smartphones)
    ========================================== */
+html, body {
+  overflow-y: auto !important;
+  height: auto !important;
+}
+
 @media (max-width: 768px) {
+  html, body {
+    overflow-y: auto !important;
+    height: auto !important;
+    touch-action: manipulation;
+  }
+
   body {
     padding: 0;
     align-items: flex-start;
+    overflow-x: hidden;
   }
 
   .app-container {
     padding: 10px 8px;
     gap: 12px;
-    min-height: 100vh;
+    min-height: auto;
+    height: auto;
   }
 
   /* Header Mobile Optimization */
@@ -819,13 +832,25 @@ input[type="range"] {
   .canvas-container {
     border-radius: 14px;
     border-width: 1px;
+    overflow: visible;
+  }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 20px 10px;
   }
 
   .overlay-card {
-    padding: 16px 12px;
+    padding: 20px 14px;
     width: 95%;
-    max-height: 85vh;
+    max-height: 88vh;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: auto;
   }
 
   .overlay-card h2 {
@@ -869,8 +894,9 @@ input[type="range"] {
     position: relative;
     width: 100%;
     max-width: 100%;
-    margin-top: 5px;
+    margin-top: 10px;
     border-radius: 14px;
+    z-index: 1;
   }
 
   .pip-body {
@@ -881,6 +907,7 @@ input[type="range"] {
   .leaderboard-card {
     width: 96%;
     padding: 16px 12px;
+    max-height: 85vh;
   }
 
   .leaderboard-header h2 {
@@ -904,7 +931,7 @@ input[type="range"] {
     flex-direction: column;
     gap: 4px;
     font-size: 0.72rem;
-    padding-bottom: 20px;
+    padding-bottom: 30px;
   }
 
   .small-footer-credits .sep {
