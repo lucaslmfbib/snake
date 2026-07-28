@@ -4,6 +4,9 @@ class HandTracker {
     this.canvasElement = document.getElementById('hand-canvas');
     this.canvasCtx = this.canvasElement.getContext('2d');
     this.statusBadge = document.getElementById('hand-status');
+    this.startStatusBadge = document.getElementById('start-hand-status');
+    this.cameraTestHint = document.getElementById('camera-test-hint');
+    this.btnStart = document.getElementById('btn-start');
     this.crosshair = document.getElementById('crosshair');
     this.sensitivitySlider = document.getElementById('sensitivity-slider');
 
@@ -84,9 +87,22 @@ class HandTracker {
     if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
       if (!this.isHandDetected) {
         this.isHandDetected = true;
-        this.statusBadge.textContent = 'Mão Ativa 🖐️';
-        this.statusBadge.className = 'status-badge active';
-        this.crosshair.classList.add('active');
+        if (this.statusBadge) {
+          this.statusBadge.textContent = 'Mão Ativa 🖐️';
+          this.statusBadge.className = 'status-badge active';
+        }
+        if (this.startStatusBadge) {
+          this.startStatusBadge.textContent = '✅ MÃO DETECTADA!';
+          this.startStatusBadge.className = 'status-badge active';
+        }
+        if (this.cameraTestHint) {
+          this.cameraTestHint.innerHTML = '✨ <strong>Perfeito! Sua mão foi capturada em tempo real!</strong> Você já pode iniciar o jogo!';
+          this.cameraTestHint.classList.add('success-text');
+        }
+        if (this.btnStart) {
+          this.btnStart.classList.add('ready-btn');
+        }
+        if (this.crosshair) this.crosshair.classList.add('active');
       }
 
       const landmarks = results.multiHandLandmarks[0];
@@ -139,9 +155,22 @@ class HandTracker {
     } else {
       if (this.isHandDetected) {
         this.isHandDetected = false;
-        this.statusBadge.textContent = 'Procurando...';
-        this.statusBadge.className = 'status-badge waiting';
-        this.crosshair.classList.remove('active');
+        if (this.statusBadge) {
+          this.statusBadge.textContent = 'Procurando...';
+          this.statusBadge.className = 'status-badge waiting';
+        }
+        if (this.startStatusBadge) {
+          this.startStatusBadge.textContent = '🖐️ Posicione a mão...';
+          this.startStatusBadge.className = 'status-badge waiting';
+        }
+        if (this.cameraTestHint) {
+          this.cameraTestHint.innerHTML = '💡 Permita o acesso à câmera e posicione a sua mão na frente da câmera para testar!';
+          this.cameraTestHint.classList.remove('success-text');
+        }
+        if (this.btnStart) {
+          this.btnStart.classList.remove('ready-btn');
+        }
+        if (this.crosshair) this.crosshair.classList.remove('active');
       }
     }
 

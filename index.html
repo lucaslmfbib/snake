@@ -90,7 +90,16 @@
               <input type="text" id="player-name-input" placeholder="Digite seu nome..." maxlength="18" value="Lucas Martins">
             </div>
 
-            <p class="subtitle">Controle a cobrinha com a sua mão em tempo real via Webcam!</p>
+            <!-- Camera Pre-Test Status Box -->
+            <div class="camera-test-box">
+              <div class="camera-test-header">
+                <span class="test-label">📷 TESTE DA CÂMERA EM TEMPO REAL:</span>
+                <span id="start-hand-status" class="status-badge waiting">Aguardando Câmera...</span>
+              </div>
+              <div id="camera-test-hint" class="camera-test-hint">
+                💡 Permita o acesso à câmera e posicione a sua mão na frente da câmera para testar!
+              </div>
+            </div>
 
             <div class="instructions-grid">
               <div class="instruction-item">
