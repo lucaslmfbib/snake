@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Cyber Snake 3000 - Jogo da Cobrinha por Gestos</title>
+  <meta name="description" content="Jogo da Cobrinha por gestos de mão com Ranking Mundial por Lucas Martins.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Style CSS -->
+  <link rel="stylesheet" href="style.css?v=5">
+
+  <!-- MediaPipe Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header / Navbar -->
+    <header class="game-header">
+      <div class="logo">
+        <span class="cyber-icon">🐍</span>
+        <div class="logo-title-group">
+          <h1>CYBER<span class="highlight">SNAKE</span></h1>
+          <span class="author-subtext">
+            Elaborado por <strong>Lucas Martins</strong> • 
+            <a href="mailto:lucaslmf@gmail.com" title="E-mail">✉️ lucaslmf@gmail.com</a> • 
+            <a href="https://www.linkedin.com/in/lucaslmf" target="_blank" rel="noopener" title="LinkedIn">💼 LinkedIn</a> • 
+            <a href="https://www.instagram.com/lucaslmf_/" target="_blank" rel="noopener" title="Instagram">📸 Instagram</a>
+          </span>
+        </div>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-box">
+          <span class="stat-label">PONTOS</span>
+          <span id="score-val" class="stat-value">0000</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">RECORDE</span>
+          <span id="highscore-val" class="stat-value">0000</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">COMBO</span>
+          <span id="combo-val" class="stat-value">x1</span>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <button id="btn-show-ranking" class="pill-btn ranking-btn" title="Ver Ranking Mundial">🏆 Ranking</button>
+        <button id="btn-toggle-sound" class="icon-btn" title="Alternar Som">🔊</button>
+        <button id="btn-toggle-mode" class="pill-btn" title="Alternar Modo de Controle">
+          <span id="mode-icon">🖐️</span> <span id="mode-text">Mão</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Game Area -->
+    <main class="game-wrapper">
+      <div class="canvas-container">
+        <canvas id="game-canvas" width="800" height="600"></canvas>
+        
+        <!-- Overlays -->
+        <!-- Start Screen -->
+        <div id="start-overlay" class="overlay active">
+          <div class="overlay-card">
+            <h2>CYBER SNAKE</h2>
+            
+            <div class="small-author-line">
+              Elaborado por <strong>Lucas Martins</strong>
+              <div class="author-links-row">
+                <a href="mailto:lucaslmf@gmail.com">✉️ lucaslmf@gmail.com</a>
+                <span class="sep">•</span>
+                <a href="https://www.linkedin.com/in/lucaslmf" target="_blank" rel="noopener">💼 LinkedIn</a>
+                <span class="sep">•</span>
+                <a href="https://www.instagram.com/lucaslmf_/" target="_blank" rel="noopener">📸 Instagram</a>
+              </div>
+            </div>
+
+            <!-- Player Name Input Group -->
+            <div class="name-input-group">
+              <label for="player-name-input">👤 SEU NOME NO RANKING:</label>
+              <input type="text" id="player-name-input" placeholder="Digite seu nome..." maxlength="18" value="Lucas Martins">
+            </div>
+
+            <p class="subtitle">Controle a cobrinha com a sua mão em tempo real via Webcam!</p>
+
+            <div class="instructions-grid">
+              <div class="instruction-item">
+                <div class="ins-icon">🖐️</div>
+                <div class="ins-text">
+                  <strong>Dedos ou Direção</strong>
+                  <p>Mova a mão na frente da câmera. A cobrinha seguirá a ponta do seu dedo indicador.</p>
+                </div>
+              </div>
+              <div class="instruction-item">
+                <div class="ins-icon">⌨️</div>
+                <div class="ins-text">
+                  <strong>Teclado (Opcional)</strong>
+                  <p>Você também pode usar as setas ou W, A, S, D no teclado a qualquer momento.</p>
+                </div>
+              </div>
+            </div>
+
+            <button id="btn-start" class="btn-glow">INICIAR JOGO</button>
+          </div>
+        </div>
+
+        <!-- Pause Screen -->
+        <div id="pause-overlay" class="overlay hidden">
+          <div class="overlay-card">
+            <h2>JOGO PAUSADO</h2>
+            <p>Pressione espaço ou clique para retomar</p>
+            <button id="btn-resume" class="btn-glow">CONTINUAR</button>
+          </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="gameover-overlay" class="overlay hidden">
+          <div class="overlay-card">
+            <h2 class="danger-text">GAME OVER</h2>
+            <div class="final-scores">
+              <p>Pontuação Final: <strong id="final-score">0</strong></p>
+              <p id="new-high-score-msg" class="hidden glow-text">🏆 NOVO RECORDE! 🏆</p>
+            </div>
+            
+            <div class="name-input-group">
+              <label for="gameover-name-input">Salvar pontuação como:</label>
+              <input type="text" id="gameover-name-input" placeholder="Seu Nome..." maxlength="18">
+            </div>
+
+            <div class="gameover-actions">
+              <button id="btn-save-score" class="btn-glow btn-save">SALVAR NO RANKING 🏆</button>
+              <button id="btn-restart" class="btn-glow">JOGAR NOVAMENTE</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leaderboard Modal Overlay -->
+        <div id="ranking-overlay" class="overlay hidden">
+          <div class="overlay-card leaderboard-card">
+            <div class="leaderboard-header">
+              <h2>🏆 RANKING MUNDIAL</h2>
+              <button id="btn-close-ranking" class="close-btn">✕</button>
+            </div>
+
+            <div class="leaderboard-list" id="leaderboard-list">
+              <!-- Dynamically populated ranking items -->
+              <div class="ranking-loading">Carregando classificação mundial...</div>
+            </div>
+
+            <button id="btn-close-ranking-bottom" class="btn-glow">VOLTAR AO JOGO</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PIP Webcam Floating Window -->
+      <div class="webcam-pip" id="webcam-container">
+        <div class="pip-header">
+          <span class="pip-title">📹 CÂMERA DE GESTOS</span>
+          <span id="hand-status" class="status-badge waiting">Conectando...</span>
+        </div>
+        <div class="pip-body">
+          <video id="webcam-video" playsinline muted></video>
+          <canvas id="hand-canvas"></canvas>
+          <div class="target-crosshair" id="crosshair"></div>
+        </div>
+        <div class="pip-footer">
+          <label class="control-label">Sensibilidade:
+            <input type="range" id="sensitivity-slider" min="1" max="5" value="3">
+          </label>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="game-footer">
+      <div class="small-footer-credits">
+        <span>Elaborado por <strong>Lucas Martins</strong></span>
+        <span class="sep">•</span>
+        <a href="mailto:lucaslmf@gmail.com">lucaslmf@gmail.com</a>
+        <span class="sep">•</span>
+        <a href="https://www.linkedin.com/in/lucaslmf" target="_blank" rel="noopener">LinkedIn</a>
+        <span class="sep">•</span>
+        <a href="https://www.instagram.com/lucaslmf_/" target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/audio.js?v=5"></script>
+  <script src="js/hand-tracker.js?v=5"></script>
+  <script src="js/game.js?v=5"></script>
+</body>
+</html>
