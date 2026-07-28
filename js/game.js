@@ -190,6 +190,13 @@ class SnakeGame {
     handleBtn(this.btnCloseRanking, () => this.closeRankingModal());
     handleBtn(this.btnCloseRankingBottom, () => this.closeRankingModal());
 
+    const btnActivateCam = document.getElementById('btn-activate-camera');
+    if (btnActivateCam) {
+      handleBtn(btnActivateCam, () => {
+        if (window.handTracker) window.handTracker.startCamera();
+      });
+    }
+
     if (this.playerNameInput) {
       this.playerNameInput.addEventListener('change', (e) => {
         localStorage.setItem('cybersnake_player_name', e.target.value);

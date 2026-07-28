@@ -97,8 +97,9 @@
                 <span id="start-hand-status" class="status-badge waiting">Aguardando Câmera...</span>
               </div>
               <div id="camera-test-hint" class="camera-test-hint">
-                💡 Permita o acesso à câmera e posicione a sua mão na frente da câmera para testar!
+                💡 Clique em "ATIVAR CÂMERA" ou posicione sua mão na frente da câmera para testar!
               </div>
+              <button id="btn-activate-camera" class="btn-glow btn-sm-cam">🎥 LIGAR / PERMITIR CÂMERA</button>
             </div>
 
             <div class="instructions-grid">
@@ -174,7 +175,7 @@
           <span id="hand-status" class="status-badge waiting">Conectando...</span>
         </div>
         <div class="pip-body">
-          <video id="webcam-video" playsinline muted></video>
+          <video id="webcam-video" autoplay playsinline muted></video>
           <canvas id="hand-canvas"></canvas>
           <div class="target-crosshair" id="crosshair"></div>
         </div>
@@ -201,8 +202,8 @@
   </div>
 
   <!-- Scripts -->
-  <script src="js/audio.js?v=7"></script>
-  <script src="js/hand-tracker.js?v=7"></script>
-  <script src="js/game.js?v=7"></script>
+  <script src="js/audio.js?v=8"></script>
+  <script src="js/hand-tracker.js?v=8"></script>
+  <script src="js/game.js?v=8"></script>
 </body>
 </html>

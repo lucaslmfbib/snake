@@ -650,6 +650,14 @@ input[type="range"] {
   text-shadow: 0 0 8px rgba(0, 255, 102, 0.4);
 }
 
+.btn-sm-cam {
+  font-size: 0.78rem !important;
+  padding: 8px 14px !important;
+  margin-top: 8px !important;
+  width: auto !important;
+  display: inline-block !important;
+}
+
 .btn-glow.ready-btn {
   background: linear-gradient(135deg, var(--accent-lime), #00b347) !important;
   color: #000 !important;

@@ -53,21 +53,58 @@ class HandTracker {
 
       this.camera = new Camera(this.videoElement, {
         onFrame: async () => {
-          await this.hands.send({ image: this.videoElement });
+          try {
+            if (this.videoElement && this.hands) {
+              await this.hands.send({ image: this.videoElement });
+            }
+          } catch (e) {}
         },
         width: 640,
         height: 480
       });
 
-      await this.camera.start();
-      this.statusBadge.textContent = 'Aguardando Mão...';
-      this.statusBadge.className = 'status-badge waiting';
+      this.startCamera();
       return true;
     } catch (err) {
-      console.error('Erro ao acessar a câmera:', err);
-      this.statusBadge.textContent = 'Sem Câmera';
-      this.statusBadge.className = 'status-badge waiting';
+      console.warn('Erro ao carregar MediaPipe Hands:', err);
+      this.updateStatusNoCamera();
       return false;
+    }
+  }
+
+  async startCamera() {
+    if (!this.camera) return;
+    try {
+      if (this.statusBadge) this.statusBadge.textContent = 'Solicitando Câmera...';
+      if (this.startStatusBadge) this.startStatusBadge.textContent = 'Solicitando Câmera...';
+      
+      await this.camera.start();
+      
+      if (this.statusBadge) {
+        this.statusBadge.textContent = 'Aguardando Mão...';
+        this.statusBadge.className = 'status-badge waiting';
+      }
+      if (this.startStatusBadge) {
+        this.startStatusBadge.textContent = '🖐️ Posicione a mão...';
+        this.startStatusBadge.className = 'status-badge waiting';
+      }
+    } catch (err) {
+      console.warn('Câmera não permitida ou indisponível:', err);
+      this.updateStatusNoCamera();
+    }
+  }
+
+  updateStatusNoCamera() {
+    if (this.statusBadge) {
+      this.statusBadge.textContent = 'Modo Toque';
+      this.statusBadge.className = 'status-badge waiting';
+    }
+    if (this.startStatusBadge) {
+      this.startStatusBadge.textContent = '📱 Modo Toque / Teclado';
+      this.startStatusBadge.className = 'status-badge waiting';
+    }
+    if (this.cameraTestHint) {
+      this.cameraTestHint.innerHTML = '💡 A câmera está desativada. Você pode jogar deslizando o dedo na tela ou usando o teclado!';
     }
   }
 
