@@ -158,15 +158,27 @@ class SnakeGame {
   init() {
     this.highScoreValEl.textContent = this.formatScore(this.highScore);
     
-    // Bind Buttons
-    this.btnStart.addEventListener('click', () => this.startGame());
-    this.btnResume.addEventListener('click', () => this.resumeGame());
-    this.btnRestart.addEventListener('click', () => this.startGame());
+    // Bind Buttons with touch & click support
+    const handleBtn = (btn, callback) => {
+      if (!btn) return;
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        callback(e);
+      });
+      btn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        callback(e);
+      });
+    };
 
-    this.btnSaveScore.addEventListener('click', () => this.saveScoreToLeaderboard());
-    this.btnShowRanking.addEventListener('click', () => this.openRankingModal());
-    this.btnCloseRanking.addEventListener('click', () => this.closeRankingModal());
-    this.btnCloseRankingBottom.addEventListener('click', () => this.closeRankingModal());
+    handleBtn(this.btnStart, () => this.startGame());
+    handleBtn(this.btnResume, () => this.resumeGame());
+    handleBtn(this.btnRestart, () => this.startGame());
+
+    handleBtn(this.btnSaveScore, () => this.saveScoreToLeaderboard());
+    handleBtn(this.btnShowRanking, () => this.openRankingModal());
+    handleBtn(this.btnCloseRanking, () => this.closeRankingModal());
+    handleBtn(this.btnCloseRankingBottom, () => this.closeRankingModal());
 
     this.playerNameInput.addEventListener('change', (e) => {
       localStorage.setItem('cybersnake_player_name', e.target.value);
@@ -191,6 +203,28 @@ class SnakeGame {
 
     // Keyboard Listeners
     window.addEventListener('keydown', (e) => this.handleKeyDown(e));
+
+    // Touch & Drag Controls on Canvas (Backup for mobile)
+    const handleTouchControl = (e) => {
+      if (this.gameState !== 'PLAYING') return;
+      if (e.touches && e.touches.length > 0) {
+        const rect = this.canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        const touchX = (touch.clientX - rect.left) * (this.canvas.width / rect.width);
+        const touchY = (touch.clientY - rect.top) * (this.canvas.height / rect.height);
+        
+        const head = this.snake[0];
+        if (head) {
+          const dx = touchX - head.x;
+          const dy = touchY - head.y;
+          if (Math.hypot(dx, dy) > 10) {
+            this.targetAngle = Math.atan2(dy, dx);
+          }
+        }
+      }
+    };
+    this.canvas.addEventListener('touchmove', handleTouchControl, { passive: true });
+    this.canvas.addEventListener('touchstart', handleTouchControl, { passive: true });
 
     // Initialize Hand Tracker
     if (window.handTracker) {
