@@ -108,6 +108,7 @@ class SnakeGame {
 
     // Inputs
     this.playerNameInput = document.getElementById('player-name-input');
+    this.gameoverNameInput = document.getElementById('gameover-name-input');
 
     // Buttons
     this.btnStart = document.getElementById('btn-start');
@@ -136,6 +137,7 @@ class SnakeGame {
     // Load saved player name
     const savedName = localStorage.getItem('cybersnake_player_name') || 'Lucas Martins';
     if (this.playerNameInput) this.playerNameInput.value = savedName;
+    if (this.gameoverNameInput) this.gameoverNameInput.value = savedName;
 
     // Snake Physics
     this.segmentRadius = 12;
@@ -197,10 +199,20 @@ class SnakeGame {
       });
     }
 
+    const syncName = (val) => {
+      const cleanName = val ? val.trim() : '';
+      if (cleanName) localStorage.setItem('cybersnake_player_name', cleanName);
+      if (this.playerNameInput && this.playerNameInput !== document.activeElement) this.playerNameInput.value = val;
+      if (this.gameoverNameInput && this.gameoverNameInput !== document.activeElement) this.gameoverNameInput.value = val;
+    };
+
     if (this.playerNameInput) {
-      this.playerNameInput.addEventListener('change', (e) => {
-        localStorage.setItem('cybersnake_player_name', e.target.value);
-      });
+      this.playerNameInput.addEventListener('input', (e) => syncName(e.target.value));
+      this.playerNameInput.addEventListener('change', (e) => syncName(e.target.value));
+    }
+    if (this.gameoverNameInput) {
+      this.gameoverNameInput.addEventListener('input', (e) => syncName(e.target.value));
+      this.gameoverNameInput.addEventListener('change', (e) => syncName(e.target.value));
     }
 
     this.btnToggleSound.addEventListener('click', () => {

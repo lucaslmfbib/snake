@@ -86,7 +86,7 @@
 
             <!-- Player Name Input Group -->
             <div class="name-input-group">
-              <label for="player-name-input">👤 SEU NOME NO RANKING:</label>
+              <label for="player-name-input">👤 DIGITE SEU NOME PARA O RANKING:</label>
               <input type="text" id="player-name-input" placeholder="Digite seu nome..." maxlength="18" value="Lucas Martins">
             </div>
 
@@ -140,8 +140,15 @@
             <div class="final-scores">
               <p>Pontuação Final: <strong id="final-score">0</strong></p>
               <p id="new-high-score-msg" class="hidden glow-text">🏆 NOVO RECORDE! 🏆</p>
-              <p class="auto-saved-msg">✅ Pontuação salva no Ranking!</p>
             </div>
+
+            <!-- Player Name Confirmation for Ranking -->
+            <div class="name-input-group">
+              <label for="gameover-name-input">👤 SEU NOME NO RANKING:</label>
+              <input type="text" id="gameover-name-input" placeholder="Digite seu nome..." maxlength="18">
+            </div>
+
+            <p class="auto-saved-msg">✅ Pontuação salva no Ranking!</p>
 
             <div class="gameover-actions">
               <button id="btn-restart" class="btn-glow">🔄 JOGAR NOVAMENTE</button>
@@ -202,8 +209,8 @@
   </div>
 
   <!-- Scripts -->
-  <script src="js/audio.js?v=8"></script>
-  <script src="js/hand-tracker.js?v=8"></script>
-  <script src="js/game.js?v=8"></script>
+  <script src="js/audio.js?v=9"></script>
+  <script src="js/hand-tracker.js?v=9"></script>
+  <script src="js/game.js?v=9"></script>
 </body>
 </html>
