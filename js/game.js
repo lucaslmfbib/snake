@@ -7,7 +7,7 @@ class LeaderboardManager {
 
   async fetchGlobalRankings() {
     try {
-      const res = await fetch(this.apiUrl);
+      const res = await fetch(`${this.apiUrl}?t=${Date.now()}`);
       if (res.ok) {
         const json = await res.json();
         if (json && Array.isArray(json.rankings)) {
