@@ -299,9 +299,29 @@ class SnakeGame {
     return val.toString().padStart(4, '0');
   }
 
-  openRankingModal() {
-    this.leaderboard.render(this.leaderboardListEl);
+  async openRankingModal() {
     this.rankingOverlay.classList.remove('hidden');
+    await this.leaderboard.render(this.leaderboardListEl);
+
+    // Sync local high score with global high score for this player
+    try {
+      const currentPlayerName = (localStorage.getItem('cybersnake_player_name') || '').trim();
+      const globalRankings = JSON.parse(localStorage.getItem('cybersnake_global_ranking_v5') || '[]');
+      if (currentPlayerName) {
+        let bestGlobalScore = 0;
+        globalRankings.forEach(r => {
+          if (r.name.trim() === currentPlayerName && r.score > bestGlobalScore) {
+            bestGlobalScore = r.score;
+          }
+        });
+        
+        if (bestGlobalScore > this.highScore) {
+          this.highScore = bestGlobalScore;
+          localStorage.setItem('cybersnake_highscore', this.highScore);
+          this.highScoreValEl.textContent = this.formatScore(this.highScore);
+        }
+      }
+    } catch(e) {}
   }
 
   closeRankingModal() {
