@@ -11,7 +11,9 @@ class LeaderboardManager {
       if (res.ok) {
         const json = await res.json();
         if (json && json.data && Array.isArray(json.data.rankings)) {
-          const list = json.data.rankings;
+          let list = json.data.rankings;
+          list.sort((a, b) => b.score - a.score);
+          list = list.slice(0, 10);
           try {
             localStorage.setItem(this.storageKey, JSON.stringify(list));
           } catch(e) {}
