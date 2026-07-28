@@ -108,7 +108,6 @@ class SnakeGame {
 
     // Inputs
     this.playerNameInput = document.getElementById('player-name-input');
-    this.gameoverNameInput = document.getElementById('gameover-name-input');
 
     // Buttons
     this.btnStart = document.getElementById('btn-start');
@@ -136,8 +135,7 @@ class SnakeGame {
 
     // Load saved player name
     const savedName = localStorage.getItem('cybersnake_player_name') || 'Lucas Martins';
-    this.playerNameInput.value = savedName;
-    this.gameoverNameInput.value = savedName;
+    if (this.playerNameInput) this.playerNameInput.value = savedName;
 
     // Snake Physics
     this.segmentRadius = 12;
@@ -192,15 +190,11 @@ class SnakeGame {
     handleBtn(this.btnCloseRanking, () => this.closeRankingModal());
     handleBtn(this.btnCloseRankingBottom, () => this.closeRankingModal());
 
-    this.playerNameInput.addEventListener('change', (e) => {
-      localStorage.setItem('cybersnake_player_name', e.target.value);
-      this.gameoverNameInput.value = e.target.value;
-    });
-
-    this.gameoverNameInput.addEventListener('change', (e) => {
-      localStorage.setItem('cybersnake_player_name', e.target.value);
-      this.playerNameInput.value = e.target.value;
-    });
+    if (this.playerNameInput) {
+      this.playerNameInput.addEventListener('change', (e) => {
+        localStorage.setItem('cybersnake_player_name', e.target.value);
+      });
+    }
 
     this.btnToggleSound.addEventListener('click', () => {
       const isMuted = window.audioSynth.toggleMute();
