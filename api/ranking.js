@@ -1,4 +1,4 @@
-// Vercel Serverless API Route: Global Leaderboard
+// Vercel Serverless API Route: Global Leaderboard (100% Real Players Only)
 let inMemoryRankings = [];
 
 export default async function handler(req, res) {
