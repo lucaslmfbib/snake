@@ -1,5 +1,5 @@
-// Vercel Serverless API Route: Global Leaderboard (100% Real Players Only)
-let inMemoryRankings = [];
+// Vercel Serverless API Route: Global Leaderboard (Persistent Cloud Database)
+const BIN_URL = 'https://extendsclass.com/api/json-storage/bin/aeefecc';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -14,8 +14,21 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
+  // Helper to fetch current DB state
+  const fetchDB = async () => {
+    try {
+      const response = await fetch(BIN_URL);
+      if (response.ok) {
+        const data = await response.json();
+        if (data && Array.isArray(data.rankings)) return data.rankings;
+      }
+    } catch (e) {}
+    return [];
+  };
+
   if (req.method === 'GET') {
-    return res.status(200).json({ rankings: inMemoryRankings });
+    const rankings = await fetchDB();
+    return res.status(200).json({ rankings });
   }
 
   if (req.method === 'POST' || req.method === 'PUT') {
@@ -27,18 +40,31 @@ export default async function handler(req, res) {
       const { name, score } = body || {};
 
       if (name && typeof score === 'number' && score > 0) {
-        inMemoryRankings.push({
+        let currentRankings = await fetchDB();
+
+        currentRankings.push({
           name: String(name).trim().slice(0, 18),
           score: Math.floor(score),
           date: new Date().toLocaleDateString('pt-BR')
         });
 
-        inMemoryRankings.sort((a, b) => b.score - a.score);
-        inMemoryRankings = inMemoryRankings.slice(0, 10);
+        currentRankings.sort((a, b) => b.score - a.score);
+        currentRankings = currentRankings.slice(0, 10);
+
+        // Save back to DB
+        await fetch(BIN_URL, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rankings: currentRankings })
+        });
+
+        return res.status(200).json({ rankings: currentRankings });
       }
     } catch (e) {}
-
-    return res.status(200).json({ rankings: inMemoryRankings });
+    
+    // In case of error, just return current state
+    const rankings = await fetchDB();
+    return res.status(200).json({ rankings });
   }
 
   return res.status(405).json({ message: 'Method not allowed' });
