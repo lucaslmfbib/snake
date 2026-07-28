@@ -118,7 +118,6 @@ class SnakeGame {
     this.btnShowRanking = document.getElementById('btn-show-ranking');
     this.btnCloseRanking = document.getElementById('btn-close-ranking');
     this.btnCloseRankingBottom = document.getElementById('btn-close-ranking-bottom');
-    this.btnClearRanking = document.getElementById('btn-clear-ranking');
     this.btnToggleSound = document.getElementById('btn-toggle-sound');
     this.btnToggleMode = document.getElementById('btn-toggle-mode');
 
@@ -192,12 +191,6 @@ class SnakeGame {
     handleBtn(this.btnShowRanking, () => this.openRankingModal());
     handleBtn(this.btnCloseRanking, () => this.closeRankingModal());
     handleBtn(this.btnCloseRankingBottom, () => this.closeRankingModal());
-    handleBtn(this.btnClearRanking, () => {
-      this.leaderboard.clearRankings();
-      this.highScore = 0;
-      this.highScoreValEl.textContent = this.formatScore(0);
-      this.leaderboard.render(this.leaderboardListEl);
-    });
 
     this.playerNameInput.addEventListener('change', (e) => {
       localStorage.setItem('cybersnake_player_name', e.target.value);
