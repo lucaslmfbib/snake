@@ -1,8 +1,8 @@
-// Leaderboard Manager (Global Online API + Local Cache Fallback)
+// Leaderboard Manager (Vercel Serverless API + Local Cache Fallback)
 class LeaderboardManager {
   constructor() {
     this.storageKey = 'cybersnake_global_ranking_v5';
-    this.apiUrl = 'https://api.restful-api.dev/objects/ff8081819f7e10ae019fa99055f63d27';
+    this.apiUrl = '/api/ranking';
   }
 
   async fetchGlobalRankings() {
@@ -10,14 +10,14 @@ class LeaderboardManager {
       const res = await fetch(this.apiUrl);
       if (res.ok) {
         const json = await res.json();
-        if (json && json.data && Array.isArray(json.data.rankings)) {
-          let list = json.data.rankings;
+        if (json && Array.isArray(json.rankings)) {
+          let list = json.rankings;
           list.sort((a, b) => b.score - a.score);
-          list = list.slice(0, 10);
+          const top10 = list.slice(0, 10);
           try {
-            localStorage.setItem(this.storageKey, JSON.stringify(list));
+            localStorage.setItem(this.storageKey, JSON.stringify(top10));
           } catch(e) {}
-          return list;
+          return top10;
         }
       }
     } catch(e) {
@@ -36,33 +36,41 @@ class LeaderboardManager {
 
   async addScore(playerName, score) {
     if (!playerName || playerName.trim() === '') playerName = 'Jogador';
-    let rankings = await this.fetchGlobalRankings();
+    const cleanName = playerName.trim();
 
+    try {
+      const res = await fetch(this.apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: cleanName, score: score })
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        if (json && Array.isArray(json.rankings)) {
+          const top10 = json.rankings.slice(0, 10);
+          try {
+            localStorage.setItem(this.storageKey, JSON.stringify(top10));
+          } catch(e) {}
+          return top10;
+        }
+      }
+    } catch(e) {
+      console.warn('Erro ao enviar pontuação para a API Vercel:', e);
+    }
+
+    // Fallback local
+    let rankings = this.getLocalRankings();
     rankings.push({
-      name: playerName.trim(),
+      name: cleanName,
       score: score,
       date: new Date().toLocaleDateString('pt-BR')
     });
-
     rankings.sort((a, b) => b.score - a.score);
     const top10 = rankings.slice(0, 10);
     try {
       localStorage.setItem(this.storageKey, JSON.stringify(top10));
     } catch(e) {}
-
-    // Synchronize with global API cloud server
-    try {
-      await fetch(this.apiUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: 'SnakeLeaderboard',
-          data: { rankings: top10 }
-        })
-      });
-    } catch(e) {
-      console.warn('Erro ao sincronizar com servidor global:', e);
-    }
     return top10;
   }
 
@@ -74,7 +82,7 @@ class LeaderboardManager {
     containerEl.innerHTML = '';
 
     if (rankings.length === 0) {
-      containerEl.innerHTML = '<div class="ranking-loading">Nenhuma pontuação registrada ainda no ranking geral.</div>';
+      containerEl.innerHTML = '<div class="ranking-loading">Nenhuma pontuação registrada ainda no ranking geral. Seja o primeiro a jogar! 🏆</div>';
       return;
     }
 
