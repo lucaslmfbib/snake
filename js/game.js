@@ -175,6 +175,16 @@ class SnakeGame {
     handleBtn(this.btnResume, () => this.resumeGame());
     handleBtn(this.btnRestart, () => this.startGame());
 
+    // Allow tap anywhere on start screen to start game
+    const handleStartOverlayTap = (e) => {
+      if (!this.startOverlay || this.startOverlay.classList.contains('hidden')) return;
+      const tag = e.target ? e.target.tagName : '';
+      if (['INPUT', 'A', 'LABEL', 'BUTTON'].includes(tag)) return;
+      this.startGame();
+    };
+    this.startOverlay.addEventListener('click', handleStartOverlayTap);
+    this.startOverlay.addEventListener('touchend', handleStartOverlayTap);
+
     handleBtn(this.btnSaveScore, () => this.saveScoreToLeaderboard());
     handleBtn(this.btnShowRanking, () => this.openRankingModal());
     handleBtn(this.btnCloseRanking, () => this.closeRankingModal());

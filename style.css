@@ -282,6 +282,15 @@ body {
   animation: modalPop 0.3s ease-out;
 }
 
+.tap-hint {
+  font-size: 0.78rem;
+  color: var(--accent-lime);
+  margin-top: 10px;
+  font-weight: 500;
+  opacity: 0.95;
+  text-shadow: 0 0 6px rgba(0, 255, 102, 0.4);
+}
+
 @keyframes modalPop {
   from { transform: scale(0.9); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
