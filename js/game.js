@@ -48,7 +48,7 @@ class LeaderboardManager {
   }
 
   render(containerEl) {
-    const rankings = this.getRankings();
+    const rankings = this.getRankings().slice(0, 10);
     containerEl.innerHTML = '';
 
     if (rankings.length === 0) {
