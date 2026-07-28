@@ -1,60 +1,78 @@
-// Leaderboard Manager
+// Leaderboard Manager (Global Online API + Local Cache Fallback)
 class LeaderboardManager {
   constructor() {
-    this.storageKey = 'cybersnake_global_ranking_v3';
-    this.defaultRankings = [];
+    this.storageKey = 'cybersnake_global_ranking_v4';
+    this.apiUrl = 'https://api.restful-api.dev/objects/ff8081819f7e10ae019fa99055f63d27';
   }
 
-  clearRankings() {
+  async fetchGlobalRankings() {
     try {
-      localStorage.removeItem(this.storageKey);
-      localStorage.removeItem('cybersnake_highscore');
-    } catch(e) {}
-    this.saveRankings([]);
+      const res = await fetch(this.apiUrl);
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.data && Array.isArray(json.data.rankings)) {
+          const list = json.data.rankings;
+          try {
+            localStorage.setItem(this.storageKey, JSON.stringify(list));
+          } catch(e) {}
+          return list;
+        }
+      }
+    } catch(e) {
+      console.warn('Usando ranking local em cache:', e);
+    }
+    return this.getLocalRankings();
   }
 
-  getRankings() {
+  getLocalRankings() {
     try {
       const data = localStorage.getItem(this.storageKey);
-      if (data) {
-        return JSON.parse(data);
-      }
+      if (data) return JSON.parse(data);
     } catch(e) {}
-    this.saveRankings(this.defaultRankings);
-    return this.defaultRankings;
+    return [];
   }
 
-  saveRankings(rankings) {
-    try {
-      localStorage.setItem(this.storageKey, JSON.stringify(rankings));
-    } catch(e) {}
-  }
-
-  addScore(playerName, score) {
+  async addScore(playerName, score) {
     if (!playerName || playerName.trim() === '') playerName = 'Jogador';
-    const rankings = this.getRankings();
-    
+    let rankings = await this.fetchGlobalRankings();
+
     rankings.push({
       name: playerName.trim(),
       score: score,
       date: new Date().toLocaleDateString('pt-BR')
     });
 
-    // Sort descending by score
     rankings.sort((a, b) => b.score - a.score);
-
-    // Keep top 10
     const top10 = rankings.slice(0, 10);
-    this.saveRankings(top10);
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(top10));
+    } catch(e) {}
+
+    // Synchronize with global API cloud server
+    try {
+      await fetch(this.apiUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: 'SnakeLeaderboard',
+          data: { rankings: top10 }
+        })
+      });
+    } catch(e) {
+      console.warn('Erro ao sincronizar com servidor global:', e);
+    }
     return top10;
   }
 
-  render(containerEl) {
-    const rankings = this.getRankings().slice(0, 10);
+  async render(containerEl) {
+    if (!containerEl) return;
+    containerEl.innerHTML = '<div class="ranking-loading">Carregando Ranking Geral em tempo real... 🌐</div>';
+    
+    const rankings = (await this.fetchGlobalRankings()).slice(0, 10);
     containerEl.innerHTML = '';
 
     if (rankings.length === 0) {
-      containerEl.innerHTML = '<div class="ranking-loading">Nenhuma pontuação registrada ainda.</div>';
+      containerEl.innerHTML = '<div class="ranking-loading">Nenhuma pontuação registrada ainda no ranking geral.</div>';
       return;
     }
 
