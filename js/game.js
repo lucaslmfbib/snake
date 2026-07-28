@@ -114,7 +114,7 @@ class SnakeGame {
     this.btnStart = document.getElementById('btn-start');
     this.btnResume = document.getElementById('btn-resume');
     this.btnRestart = document.getElementById('btn-restart');
-    this.btnSaveScore = document.getElementById('btn-save-score');
+    this.btnGameoverRanking = document.getElementById('btn-gameover-ranking');
     this.btnShowRanking = document.getElementById('btn-show-ranking');
     this.btnCloseRanking = document.getElementById('btn-close-ranking');
     this.btnCloseRankingBottom = document.getElementById('btn-close-ranking-bottom');
@@ -187,8 +187,8 @@ class SnakeGame {
     this.startOverlay.addEventListener('click', handleStartOverlayTap);
     this.startOverlay.addEventListener('touchend', handleStartOverlayTap);
 
-    handleBtn(this.btnSaveScore, () => this.saveScoreToLeaderboard());
     handleBtn(this.btnShowRanking, () => this.openRankingModal());
+    handleBtn(this.btnGameoverRanking, () => this.openRankingModal());
     handleBtn(this.btnCloseRanking, () => this.closeRankingModal());
     handleBtn(this.btnCloseRankingBottom, () => this.closeRankingModal());
 
