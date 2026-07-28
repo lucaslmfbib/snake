@@ -1,7 +1,7 @@
 // Leaderboard Manager (Global Online API + Local Cache Fallback)
 class LeaderboardManager {
   constructor() {
-    this.storageKey = 'cybersnake_global_ranking_v4';
+    this.storageKey = 'cybersnake_global_ranking_v5';
     this.apiUrl = 'https://api.restful-api.dev/objects/ff8081819f7e10ae019fa99055f63d27';
   }
 
