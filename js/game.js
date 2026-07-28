@@ -276,8 +276,10 @@ class SnakeGame {
   }
 
   startGame() {
-    // Save current name
-    const name = this.playerNameInput.value;
+    this.hasSavedThisRound = false;
+
+    // Save current name permanently in localStorage
+    const name = this.playerNameInput ? this.playerNameInput.value : '';
     if (name) localStorage.setItem('cybersnake_player_name', name);
 
     this.score = 0;
@@ -325,11 +327,11 @@ class SnakeGame {
   }
 
   gameOver() {
+    if (this.gameState === 'GAMEOVER') return;
     this.gameState = 'GAMEOVER';
     this.finalScoreEl.textContent = this.score;
 
-    const name = localStorage.getItem('cybersnake_player_name') || 'Lucas Martins';
-    this.gameoverNameInput.value = name;
+    const name = localStorage.getItem('cybersnake_player_name') || (this.playerNameInput ? this.playerNameInput.value : '') || 'Lucas Martins';
 
     if (this.score > this.highScore) {
       this.highScore = this.score;
@@ -338,8 +340,9 @@ class SnakeGame {
       this.newHighScoreMsg.classList.remove('hidden');
     }
 
-    // Auto save score if > 0
-    if (this.score > 0) {
+    // Auto save score ONCE per round if score > 0
+    if (this.score > 0 && !this.hasSavedThisRound) {
+      this.hasSavedThisRound = true;
       this.leaderboard.addScore(name, this.score);
     }
 
