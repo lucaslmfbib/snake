@@ -20,7 +20,7 @@ export default async function handler(req, res) {
   // Helper to fetch current DB state
   const fetchDB = async () => {
     try {
-      const response = await fetch(BIN_URL);
+      const response = await fetch(BIN_URL, { cache: 'no-store' });
       if (response.ok) {
         let data = await response.json();
         
