@@ -127,7 +127,7 @@ class SnakeGame {
 
     // UI Elements
     this.scoreValEl = document.getElementById('score-val');
-    this.highScoreValEl = document.getElementById('highscore-val');
+    // this.highScoreValEl = document.getElementById('highscore-val');
     this.comboValEl = document.getElementById('combo-val');
     this.startOverlay = document.getElementById('start-overlay');
     this.pauseOverlay = document.getElementById('pause-overlay');
@@ -191,7 +191,7 @@ class SnakeGame {
   }
 
   init() {
-    this.highScoreValEl.textContent = this.formatScore(this.highScore);
+    // this.highScoreValEl.textContent = this.formatScore(this.highScore);
     
     // Bind Buttons with touch & click support
     const handleBtn = (btn, callback) => {
@@ -307,26 +307,6 @@ class SnakeGame {
   async openRankingModal() {
     this.rankingOverlay.classList.remove('hidden');
     await this.leaderboard.render(this.leaderboardListEl);
-
-    // Sync local high score with global high score for this player
-    try {
-      const currentPlayerName = (localStorage.getItem('cybersnake_player_name') || '').trim();
-      const globalRankings = JSON.parse(localStorage.getItem('cybersnake_global_ranking_v6') || '[]');
-      if (currentPlayerName) {
-        let bestGlobalScore = 0;
-        globalRankings.forEach(r => {
-          if (r.name.trim() === currentPlayerName && r.score > bestGlobalScore) {
-            bestGlobalScore = r.score;
-          }
-        });
-        
-        if (bestGlobalScore > this.highScore) {
-          this.highScore = bestGlobalScore;
-          localStorage.setItem('cybersnake_highscore', this.highScore);
-          this.highScoreValEl.textContent = this.formatScore(this.highScore);
-        }
-      }
-    } catch(e) {}
   }
 
   closeRankingModal() {
@@ -402,7 +382,7 @@ class SnakeGame {
     if (this.score > this.highScore) {
       this.highScore = this.score;
       localStorage.setItem('cybersnake_highscore', this.highScore.toString());
-      this.highScoreValEl.textContent = this.formatScore(this.highScore);
+      // this.highScoreValEl.textContent = this.formatScore(this.highScore);
       this.newHighScoreMsg.classList.remove('hidden');
     }
 
