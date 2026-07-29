@@ -1,8 +1,8 @@
-// Leaderboard Manager (Vercel Serverless API + Local Cache Fallback)
+// Leaderboard Manager (Direct API Connection)
 class LeaderboardManager {
   constructor() {
-    this.storageKey = 'cybersnake_global_ranking_v5';
-    this.apiUrl = '/api/ranking';
+    this.storageKey = 'cybersnake_global_ranking_v6';
+    this.apiUrl = 'https://api.restful-api.dev/objects/ff8081819f7e10ae019fab304d5e3ebb';
   }
 
   async fetchGlobalRankings() {
@@ -10,8 +10,8 @@ class LeaderboardManager {
       const res = await fetch(`${this.apiUrl}?t=${Date.now()}`);
       if (res.ok) {
         const json = await res.json();
-        if (json && Array.isArray(json.rankings)) {
-          let list = json.rankings;
+        if (json && json.data && Array.isArray(json.data.rankings)) {
+          let list = json.data.rankings;
           list.sort((a, b) => b.score - a.score);
           const top10 = list.slice(0, 10);
           try {
@@ -36,34 +36,39 @@ class LeaderboardManager {
 
   async addScore(playerName, score) {
     if (!playerName || playerName.trim() === '') playerName = 'Jogador';
-    const cleanName = playerName.trim();
+    const cleanName = playerName.trim().slice(0, 18);
 
     try {
+      let list = await this.fetchGlobalRankings();
+      list.push({
+        name: cleanName,
+        score: Math.floor(score),
+        date: new Date().toLocaleDateString('pt-BR')
+      });
+      list.sort((a, b) => b.score - a.score);
+      const top10 = list.slice(0, 10);
+
       const res = await fetch(this.apiUrl, {
-        method: 'POST',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: cleanName, score: score })
+        body: JSON.stringify({ data: { rankings: top10 } })
       });
 
       if (res.ok) {
-        const json = await res.json();
-        if (json && Array.isArray(json.rankings)) {
-          const top10 = json.rankings.slice(0, 10);
-          try {
-            localStorage.setItem(this.storageKey, JSON.stringify(top10));
-          } catch(e) {}
-          return top10;
-        }
+        try {
+          localStorage.setItem(this.storageKey, JSON.stringify(top10));
+        } catch(e) {}
+        return top10;
       }
     } catch(e) {
-      console.warn('Erro ao enviar pontuação para a API Vercel:', e);
+      console.warn('Erro ao enviar pontuação para a API:', e);
     }
 
     // Fallback local
     let rankings = this.getLocalRankings();
     rankings.push({
       name: cleanName,
-      score: score,
+      score: Math.floor(score),
       date: new Date().toLocaleDateString('pt-BR')
     });
     rankings.sort((a, b) => b.score - a.score);
@@ -306,7 +311,7 @@ class SnakeGame {
     // Sync local high score with global high score for this player
     try {
       const currentPlayerName = (localStorage.getItem('cybersnake_player_name') || '').trim();
-      const globalRankings = JSON.parse(localStorage.getItem('cybersnake_global_ranking_v5') || '[]');
+      const globalRankings = JSON.parse(localStorage.getItem('cybersnake_global_ranking_v6') || '[]');
       if (currentPlayerName) {
         let bestGlobalScore = 0;
         globalRankings.forEach(r => {
