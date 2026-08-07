@@ -1032,3 +1032,4 @@ html, body {
 
 
 
+.camera-select { background: rgba(0,0,0,0.5); color: #0f0; border: 1px solid #0f0; padding: 4px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.8em; margin-right: 10px; max-width: 150px; }

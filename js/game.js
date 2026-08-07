@@ -168,7 +168,7 @@ class SnakeGame {
     this.eatCount = 0;
 
     // Load saved player name
-    const savedName = localStorage.getItem('cybersnake_player_name') || 'Lucas Martins';
+    const savedName = localStorage.getItem('cybersnake_player_name') || '';
     if (this.playerNameInput) this.playerNameInput.value = savedName;
     if (this.gameoverNameInput) this.gameoverNameInput.value = savedName;
 
@@ -377,7 +377,7 @@ class SnakeGame {
     this.gameState = 'GAMEOVER';
     this.finalScoreEl.textContent = this.score;
 
-    const name = localStorage.getItem('cybersnake_player_name') || (this.playerNameInput ? this.playerNameInput.value : '') || 'Lucas Martins';
+    const name = localStorage.getItem('cybersnake_player_name') || (this.playerNameInput ? this.playerNameInput.value : '') || 'Jogador';
 
     if (this.score > this.highScore) {
       this.highScore = this.score;

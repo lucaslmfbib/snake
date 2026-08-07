@@ -15,10 +15,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 
   <!-- Style CSS -->
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=6">
 
   <!-- MediaPipe Libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -83,7 +82,7 @@
             <!-- Player Name Input Group -->
             <div class="name-input-group">
               <label for="player-name-input">👤 DIGITE SEU NOME PARA O RANKING:</label>
-              <input type="text" id="player-name-input" placeholder="Digite seu nome..." maxlength="18" value="Lucas Martins">
+              <input type="text" id="player-name-input" placeholder="Digite seu nome..." maxlength="18">
             </div>
 
             <!-- Camera Pre-Test Status Box -->
@@ -175,6 +174,7 @@
       <div class="webcam-pip" id="webcam-container">
         <div class="pip-header">
           <span class="pip-title">📹 CÂMERA DE GESTOS</span>
+          <select id="camera-select" class="camera-select hidden"></select>
           <span id="hand-status" class="status-badge waiting">Conectando...</span>
         </div>
         <div class="pip-body">
@@ -205,8 +205,8 @@
   </div>
 
   <!-- Scripts -->
-  <script src="js/audio.js?v=19"></script>
-  <script src="js/hand-tracker.js?v=19"></script>
-  <script src="js/game.js?v=19"></script>
+  <script src="js/audio.js?v=20"></script>
+  <script src="js/hand-tracker.js?v=20"></script>
+  <script src="js/game.js?v=20"></script>
 </body>
 </html>

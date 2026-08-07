@@ -9,9 +9,11 @@ class HandTracker {
     this.btnStart = document.getElementById('btn-start');
     this.crosshair = document.getElementById('crosshair');
     this.sensitivitySlider = document.getElementById('sensitivity-slider');
+    this.cameraSelect = document.getElementById('camera-select');
 
     this.hands = null;
-    this.camera = null;
+    this.cameraStream = null;
+    this.animationFrameId = null;
     this.isHandDetected = false;
     
     // Position of tracked finger (0.0 to 1.0)
@@ -51,19 +53,8 @@ class HandTracker {
 
       this.hands.onResults((results) => this.onResults(results));
 
-      this.camera = new Camera(this.videoElement, {
-        onFrame: async () => {
-          try {
-            if (this.videoElement && this.hands) {
-              await this.hands.send({ image: this.videoElement });
-            }
-          } catch (e) {}
-        },
-        width: 640,
-        height: 480
-      });
-
-      this.startCamera();
+      await this.populateCameras();
+      await this.startCamera();
       return true;
     } catch (err) {
       console.warn('Erro ao carregar MediaPipe Hands:', err);
@@ -72,14 +63,58 @@ class HandTracker {
     }
   }
 
-  async startCamera() {
-    if (!this.camera) return;
+  async populateCameras() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+    try {
+      // Pede permissão uma vez para os labels aparecerem
+      await navigator.mediaDevices.getUserMedia({ video: true }); 
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(device => device.kind === 'videoinput');
+      
+      if (this.cameraSelect && videoDevices.length > 0) {
+        this.cameraSelect.innerHTML = '';
+        videoDevices.forEach((device, index) => {
+          const option = document.createElement('option');
+          option.value = device.deviceId;
+          option.text = device.label || `Câmera ${index + 1}`;
+          this.cameraSelect.appendChild(option);
+        });
+        
+        if (videoDevices.length > 1) {
+          this.cameraSelect.classList.remove('hidden');
+        }
+
+        this.cameraSelect.addEventListener('change', () => {
+          this.startCamera(this.cameraSelect.value);
+        });
+      }
+    } catch (err) {
+      console.warn('Erro ao listar câmeras:', err);
+    }
+  }
+
+  async startCamera(deviceId = null) {
+    if (this.cameraStream) {
+      this.cameraStream.getTracks().forEach(track => track.stop());
+    }
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+
     try {
       if (this.statusBadge) this.statusBadge.textContent = 'Solicitando Câmera...';
       if (this.startStatusBadge) this.startStatusBadge.textContent = 'Solicitando Câmera...';
       
-      await this.camera.start();
+      const constraints = {
+        video: deviceId ? { deviceId: { exact: deviceId }, width: 640, height: 480 } : { width: 640, height: 480 }
+      };
       
+      this.cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+      this.videoElement.srcObject = this.cameraStream;
+      await this.videoElement.play();
+      
+      this.cameraLoop();
+
       if (this.statusBadge) {
         this.statusBadge.textContent = 'Aguardando Mão...';
         this.statusBadge.className = 'status-badge waiting';
@@ -92,6 +127,15 @@ class HandTracker {
       console.warn('Câmera não permitida ou indisponível:', err);
       this.updateStatusNoCamera();
     }
+  }
+
+  async cameraLoop() {
+    if (this.videoElement.readyState >= 2 && this.hands) {
+      try {
+        await this.hands.send({ image: this.videoElement });
+      } catch(e) {}
+    }
+    this.animationFrameId = requestAnimationFrame(() => this.cameraLoop());
   }
 
   updateStatusNoCamera() {
